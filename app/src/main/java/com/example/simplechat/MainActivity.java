@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView messagesRecyclerView;
     private int unseenMessages = 0;
     private String lastMessage ="";
+    //private RecyclerView messagesRecyclerView;
+    private MessagesAdapter messagesAdapter;
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://simplechat-52db7-default-rtdb.firebaseio.com");
 
@@ -54,8 +56,10 @@ public class MainActivity extends AppCompatActivity {
 
         messagesRecyclerView.setHasFixedSize(true);
         messagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        // set adapter to recyclerview
+        messagesAdapter = new MessagesAdapter(messagesLists,MainActivity.this);
 
-        messagesRecyclerView.setAdapter(new MessagesAdapter(messagesLists,MainActivity.this));
+        messagesRecyclerView.setAdapter(messagesAdapter);
 
 
         ProgressDialog progressDialog = new ProgressDialog(this);
@@ -89,8 +93,8 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 messagesLists.clear();
-                unseenMessages = 0;
-                lastMessage = "";
+                //unseenMessages = 0;
+                //lastMessage = "";
 
                 for (DataSnapshot dataSnapshot : snapshot.child("users").getChildren()) {
                     final String getMobile = dataSnapshot.getKey();
@@ -130,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 MessagesList messagesList = new MessagesList(getName, getMobile, lastMessage, getProfilePic, unseenMessages);
                                 messagesLists.add(messagesList);
+                               messagesAdapter.updateData(messagesLists);
                                 messagesRecyclerView.setAdapter(new MessagesAdapter(messagesLists, MainActivity.this));
                             }
 
