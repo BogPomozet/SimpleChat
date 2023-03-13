@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private String email;
     private String name;
     private RecyclerView messagesRecyclerView;
+    private int unseenMessages = 0;
+    private String lastMessage ="";
+
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://simplechat-52db7-default-rtdb.firebaseio.com");
 
     @SuppressLint("MissingInflatedId")
@@ -51,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
 
         messagesRecyclerView.setHasFixedSize(true);
         messagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        messagesRecyclerView.setAdapter(new MessagesAdapter(messagesLists,MainActivity.this));
 
 
         ProgressDialog progressDialog = new ProgressDialog(this);
@@ -84,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 messagesLists.clear();
+                unseenMessages = 0;
+                lastMessage = "";
 
                 for (DataSnapshot dataSnapshot : snapshot.child("users").getChildren()) {
                     final String getMobile = dataSnapshot.getKey();
@@ -91,13 +98,39 @@ public class MainActivity extends AppCompatActivity {
                     if (!getMobile.equals(mobile)) {
                         final String getName = dataSnapshot.child("name").getValue(String.class);
                         final String getProfilePic = dataSnapshot.child("profile_pic").getValue(String.class);
-                        final String lastMessage = "";
-                        int unseenMessages = 0;
+
+
 
                         databaseReference.child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
+                                int getChatCounts = (int) snapshot.getChildrenCount();
+
+                                if (getChatCounts > 0) {
+                                    for (DataSnapshot dataSnapshot1 : snapshot.getChildren()) {
+                                        final String getKey = dataSnapshot1.getKey();
+                                        final String getUserOne = dataSnapshot1.child("user1").getValue(String.class);
+                                        final String getUserTwo = dataSnapshot1.child("user2").getValue(String.class);
+
+                                        if (getUserOne.equals(getMobile) && getUserTwo.equals(mobile) || getUserOne.equals(mobile) && getUserTwo.equals(getMobile)) {
+
+                                            for (DataSnapshot chatDataSnapshot : dataSnapshot1.child("messages").getChildren()) {
+
+                                                final long getMessageKey = Long.parseLong(chatDataSnapshot.getKey());
+                                                final long getLastMessage = Long.parseLong(MemoryData.getLastMessage(MainActivity.this, getKey));
+
+                                                lastMessage = chatDataSnapshot.child("msg").getValue(String.class);
+                                                if (getMessageKey > getLastMessage){
+                                                    unseenMessages++;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                MessagesList messagesList = new MessagesList(getName, getMobile, lastMessage, getProfilePic, unseenMessages);
+                                messagesLists.add(messagesList);
+                                messagesRecyclerView.setAdapter(new MessagesAdapter(messagesLists, MainActivity.this));
                             }
 
                             @Override
@@ -106,11 +139,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
-                        MessagesList messagesList = new MessagesList(getName, getMobile, lastMessage, getProfilePic, unseenMessages);
-                        messagesLists.add(messagesList);
                     }
                 }
-                messagesRecyclerView.setAdapter(new MessagesAdapter(messagesLists, MainActivity.this));
             }
 
             @Override
