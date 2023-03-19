@@ -55,7 +55,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
             holder.lastMessage.setTextColor(Color.parseColor("#959595"));
         } else {
             holder.unseenMessages.setVisibility(View.VISIBLE);
-            holder.unseenMessages.setText(listA.getUnseenMessages()+"");
+            holder.unseenMessages.setText(listA.getUnseenMessages() + "");
             holder.lastMessage.setTextColor(context.getResources().getColor(R.color.theme_color_80));
         }
 
@@ -64,14 +64,17 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
             public void onClick(View view) {
 
                 Intent intent = new Intent(context, Chat.class);
+                intent.putExtra("mobile", listA.getMobile());
                 intent.putExtra("name", listA.getName());
                 intent.putExtra("profile_pic", listA.getName());
+                intent.putExtra("chat_key", listA.getChatKey());
 
                 context.startActivity(intent);
             }
         });
     }
-    public void updateData(List<MessagesList> messagesLists){
+
+    public void updateData(List<MessagesList> messagesLists) {
         this.messagesLists = messagesLists;
         notifyDataSetChanged();
     }
@@ -81,14 +84,15 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyView
         return messagesLists.size();
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder{
+    static class MyViewHolder extends RecyclerView.ViewHolder {
 
         private CircleImageView profilePic;
         private TextView uname;
         private TextView lastMessage;
         private TextView unseenMessages;
         private LinearLayout rootLayout;
-        public MyViewHolder(@NonNull View itemView){
+
+        public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             profilePic = itemView.findViewById(R.id.profilePic);
