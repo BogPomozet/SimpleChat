@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/rootLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+
 
         <RelativeLayout
+            android:id="@+id/rootLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -38,7 +36,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:textSize="18sp"
-                    android:text="Fullname"
+                    android:text="Full Name"
                     android:textStyle="bold"/>
                 <TextView
                     android:id="@+id/lastMessage"
@@ -61,17 +59,18 @@
                 android:layout_marginEnd="20dp"
                 android:text="1"
                 android:textSize="10sp"
-                android:textColor="#FFFF"
+                android:textColor="#140000"
                 android:gravity="center"
-                android:background="@drawable/round_back_theme"/>
+                android:background="@drawable/round_back_theme"
+                tools:ignore="ExtraText" />
         </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:backgroundColor="#1400000"
+
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"/>
-    </LinearLayout>
+
 
 </RelativeLayout>

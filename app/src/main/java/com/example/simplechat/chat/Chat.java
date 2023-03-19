@@ -2,7 +2,10 @@ package com.example.simplechat.chat;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -24,10 +27,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class Chat extends AppCompatActivity {
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://simplechat-52db7-default-rtdb.firebaseio.com");
-    //private int generateChatKey;
+    private RecyclerView chattingRecyclerView;
     String chatKey;
     String getUserMobile = "";
 
+
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +44,7 @@ public class Chat extends AppCompatActivity {
         final CircleImageView profilePic = findViewById(R.id.profilePic);
         final ImageView sendBtn = findViewById(R.id.sendBtn);
 
+        chattingRecyclerView =findViewById(R.id.chattingRecyclerView);
 
         //get data from messages adapter class
         final String getName = getIntent().getStringExtra("name");
@@ -51,6 +57,9 @@ public class Chat extends AppCompatActivity {
 
         nameTV.setText(getName);
         Picasso.get().load(getProfilePic).into(profilePic);
+
+        chattingRecyclerView.setHasFixedSize(true);
+        chattingRecyclerView.setLayoutManager(new LinearLayoutManager(Chat.this));
 
         if (chatKey.isEmpty()) {
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -87,6 +96,8 @@ public class Chat extends AppCompatActivity {
                 databaseReference.child("chat").child(chatKey).child("messages").child(timeStamp).child("msg").setValue(getTxtMessage);
                 databaseReference.child("chat").child(chatKey).child("messages").child(timeStamp).child("mobile").setValue(getUserMobile);
 
+                //clear edit txt
+                messageEdtTxt.setText("");
             }
         });
 
